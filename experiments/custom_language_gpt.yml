@@ -1,4 +1,4 @@
-name: CHANGEME_your_experiment_name
+name: custom_language_gpt
 model: extensibletrainer
 scale: 1
 gpu_ids: [0] # <-- unless you have multiple gpus, use this
@@ -11,11 +11,11 @@ use_tb_logger: true
 
 datasets:
   train:
-    name: CHANGEME_training_dataset_name
+    name: train_dataset
     n_workers: 8 # idk what this does
     batch_size: 128 # This leads to ~16GB of vram usage on my 3090.
     mode: paired_voice_audio
-    path: CHANGEME_path_to_training_dataset
+    path: ../../dataset/train.txt
     fetcher_mode: ['lj'] # CHANGEME if your dataset isn't in LJSpeech format
     phase: train
     max_wav_length: 255995
@@ -26,12 +26,13 @@ datasets:
     conditioning_length: 44000
     use_bpe_tokenizer: True
     load_aligned_codes: False
+    tockenizer_vocab: ../custom_language_tokenizer.json
   val:
-    name: CHANGEME_validation_dataset_name
+    name: val_dataset
     n_workers: 1
     batch_size: 64 # this could be higher probably
     mode: paired_voice_audio
-    path: CHANGEME_path_to_validation_dataset
+    path: ../../dataset/val.txt
     fetcher_mode: ['lj']
     phase: val # might be broken idk
     max_wav_length: 255995
@@ -41,7 +42,8 @@ datasets:
     num_conditioning_candidates: 2
     conditioning_length: 44000
     use_bpe_tokenizer: True
-    load_aligned_codes: False
+    load_aligned_codes: 
+    tockenizer_vocab: ../custom_language_tockenizer.json
 
 steps:        
   gpt_train:
@@ -123,7 +125,7 @@ path:
 
 # afaik all units here are measured in **steps** (i.e. one batch of batch_size is 1 unit)
 train: # CHANGEME: ALL OF THESE PARAMETERS SHOULD BE EXPERIMENTED WITH
-  niter: 50000
+  niter: 5000
   warmup_iter: -1
   mega_batch_factor: 4    # <-- Gradient accumulation factor. If you are running OOM, increase this to [2,4,8].
   val_freq: 500 # TODO set this to epoch size * something
